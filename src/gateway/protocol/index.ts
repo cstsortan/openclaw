@@ -15,6 +15,18 @@ import {
   AgentsListResultSchema,
   type AgentWaitParams,
   AgentWaitParamsSchema,
+  type AuthProfileDeleteParams,
+  AuthProfileDeleteParamsSchema,
+  type AuthProfileDeleteResult,
+  AuthProfileDeleteResultSchema,
+  type AuthProfileListParams,
+  AuthProfileListParamsSchema,
+  type AuthProfileListResult,
+  AuthProfileListResultSchema,
+  type AuthProfileSetParams,
+  AuthProfileSetParamsSchema,
+  type AuthProfileSetResult,
+  AuthProfileSetResultSchema,
   type ChannelsLogoutParams,
   ChannelsLogoutParamsSchema,
   type ChannelsStatusParams,
@@ -319,6 +331,15 @@ export const validateUpdateRunParams = ajv.compile<UpdateRunParams>(UpdateRunPar
 export const validateWebLoginStartParams =
   ajv.compile<WebLoginStartParams>(WebLoginStartParamsSchema);
 export const validateWebLoginWaitParams = ajv.compile<WebLoginWaitParams>(WebLoginWaitParamsSchema);
+export const validateAuthProfileSetParams = ajv.compile<AuthProfileSetParams>(
+  AuthProfileSetParamsSchema,
+);
+export const validateAuthProfileListParams = ajv.compile<AuthProfileListParams>(
+  AuthProfileListParamsSchema,
+);
+export const validateAuthProfileDeleteParams = ajv.compile<AuthProfileDeleteParams>(
+  AuthProfileDeleteParamsSchema,
+);
 
 export function formatValidationErrors(errors: ErrorObject[] | null | undefined) {
   if (!errors?.length) {

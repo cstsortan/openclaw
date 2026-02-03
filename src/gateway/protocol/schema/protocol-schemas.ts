@@ -23,6 +23,14 @@ import {
   SkillsUpdateParamsSchema,
 } from "./agents-models-skills.js";
 import {
+  AuthProfileDeleteParamsSchema,
+  AuthProfileDeleteResultSchema,
+  AuthProfileListParamsSchema,
+  AuthProfileListResultSchema,
+  AuthProfileSetParamsSchema,
+  AuthProfileSetResultSchema,
+} from "./auth.js";
+import {
   ChannelsLogoutParamsSchema,
   ChannelsStatusParamsSchema,
   ChannelsStatusResultSchema,
@@ -225,6 +233,12 @@ export const ProtocolSchemas: Record<string, TSchema> = {
   UpdateRunParams: UpdateRunParamsSchema,
   TickEvent: TickEventSchema,
   ShutdownEvent: ShutdownEventSchema,
+  AuthProfileSetParams: AuthProfileSetParamsSchema,
+  AuthProfileSetResult: AuthProfileSetResultSchema,
+  AuthProfileListParams: AuthProfileListParamsSchema,
+  AuthProfileListResult: AuthProfileListResultSchema,
+  AuthProfileDeleteParams: AuthProfileDeleteParamsSchema,
+  AuthProfileDeleteResult: AuthProfileDeleteResultSchema,
 };
 
 export const PROTOCOL_VERSION = 3 as const;
