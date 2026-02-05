@@ -24,13 +24,47 @@ metadata:
 
 # gog
 
-Use `gog` for Gmail/Calendar/Drive/Contacts/Sheets/Docs. Requires OAuth setup.
+Use `gog` for Gmail/Calendar/Drive/Contacts/Sheets/Docs. OAuth credentials are pre-configured.
 
-Setup (once)
+## Setup (once)
 
-- `gog auth credentials /path/to/client_secret.json`
-- `gog auth add you@gmail.com --services gmail,calendar,drive,contacts,docs,sheets`
-- `gog auth list`
+**Note**: OAuth client credentials are already configured via environment variables. You only need to authorize your Google account.
+
+### Check Existing Authorization
+
+```bash
+# Check if you already have tokens for your account
+gog auth list
+```
+
+If your email is already listed, you're done. Skip to [Common commands](#common-commands).
+
+### Authorize Your Google Account (Manual Mode)
+
+**Important**: Always use `--manual` mode. The local callback server does not work in this environment.
+
+```bash
+gog auth add you@gmail.com --services gmail,calendar,drive,contacts,docs,sheets --manual
+```
+
+**Manual authorization flow:**
+
+1. Run the command above
+2. You'll receive a Google consent URL
+3. Open the URL in your browser (any device)
+4. Approve the consent
+5. Google redirects to `http://localhost:1/` (the page won't load - this is expected)
+6. Copy the full redirected URL from your browser's address bar (it will look like `http://localhost:1/?code=...&state=...`)
+7. Paste it back into the CLI prompt
+8. `gog` extracts the authorization code and stores your refresh token
+
+### Verify
+
+```bash
+gog auth list
+```
+
+You should see your email with the authorized services listed.
 
 Common commands
 
@@ -106,8 +140,47 @@ Email Formatting
     --body-html "<p>Hi Name,</p><p>Thanks for meeting today. Here are the next steps:</p><ul><li>Item one</li><li>Item two</li></ul><p>Best regards,<br>Your Name</p>"
   ```
 
-Notes
+## Why Manual Mode?
 
+This environment runs in a container where:
+
+- Local callback servers (`127.0.0.1:<port>`) are not accessible from your browser
+- The process might be restarted during authorization
+- OAuth client credentials are pre-configured via `GOG_CREDENTIALS_JSON` environment variable
+
+**Manual mode (`--manual`) is required** because:
+
+- It doesn't rely on a local callback server
+- You can authorize from any device (desktop, phone, etc.)
+- The authorization can complete even if the process restarts
+- You manually copy/paste the redirect URL, so there's no timing dependency
+
+## Credentials vs Authorization
+
+- **OAuth Credentials** (`gog auth credentials`): Client ID and secret - **already configured** via environment variables
+- **Account Authorization** (`gog auth add`): User consent and refresh token - **you must run this** for each Google account
+
+## Troubleshooting
+
+### No tokens after running `gog auth add`
+
+**Cause**: Authorization flow didn't complete successfully.
+**Solution**: Run `gog auth add you@gmail.com --services gmail,calendar,drive,contacts,docs,sheets --manual` again and carefully copy the full redirect URL.
+
+### "Could not find credentials"
+
+**Cause**: The `GOG_CREDENTIALS_JSON` environment variable is not set.
+**Solution**: Credentials should be configured automatically. Contact support if this error appears.
+
+### Redirect URL doesn't have a code parameter
+
+**Cause**: Authorization was denied or an error occurred during consent.
+**Solution**: Check the URL for `error=` parameter. Retry authorization and approve all requested permissions.
+
+## Notes
+
+- **Always use `--manual` mode** for `gog auth add` in this environment.
+- OAuth credentials are pre-configured - never run `gog auth credentials`.
 - Set `GOG_ACCOUNT=you@gmail.com` to avoid repeating `--account`.
 - For scripting, prefer `--json` plus `--no-input`.
 - Sheets values can be passed via `--values-json` (recommended) or as inline rows.

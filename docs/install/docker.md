@@ -252,6 +252,36 @@ ENV NODE_ENV=production
 CMD ["node","dist/index.js"]
 ```
 
+### Environment-based configuration (optional)
+
+You can provide initial configuration and credentials via environment variables instead of mounting config files:
+
+**Initial OpenClaw Config:**
+
+```bash
+export OPENCLAW_INITIAL_CONFIG='{"gateway":{"mode":"local","token":"your-token"},"providers":{"openai":{"apiKey":"sk-..."}}}'
+docker compose up -d openclaw-gateway
+```
+
+This writes the JSON to `~/.openclaw/openclaw.json` on container startup.
+
+**Gog OAuth Credentials:**
+
+```bash
+export GOG_CREDENTIALS_JSON='{"installed":{"client_id":"123456-abc.apps.googleusercontent.com","client_secret":"...","project_id":"...","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token"}}'
+docker compose up -d openclaw-gateway
+```
+
+This writes the OAuth client credentials to `~/.config/gogcli/credentials.json` on container startup, enabling Gmail watch functionality without manual `gog auth credentials` setup.
+
+Notes:
+
+- These environment variables are processed by the entrypoint script before the gateway starts.
+- `OPENCLAW_INITIAL_CONFIG` is written to `$OPENCLAW_CONFIG_DIR/openclaw.json` (defaults to `/home/node/.openclaw/openclaw.json`).
+- `GOG_CREDENTIALS_JSON` is written to `~/.config/gogcli/credentials.json`.
+- To use Gmail watch, you still need to run `gog auth add` after the container starts to complete OAuth flow and store user tokens.
+- For production deployments, consider using Docker secrets or a secrets manager instead of environment variables.
+
 ### Channel setup (optional)
 
 Use the CLI container to configure channels, then restart the gateway if needed.
